@@ -62,7 +62,7 @@ async function displayModel({ scene, interactionManager }) {
   const model = await loadModel();
   const geometry = model.scene.children[0].geometry;
 
-  const meshMaterial = new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.DoubleSide });
+  const meshMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
   const mesh = new THREE.Mesh(geometry, meshMaterial);
@@ -71,10 +71,32 @@ async function displayModel({ scene, interactionManager }) {
   scene.add(mesh);
 
   const edges = new THREE.EdgesGeometry(geometry);
+  const drawCount = edges.parameters.geometry.index.count;
+
+  edges.setDrawRange(0, 0);
   const edgesSegments = new THREE.LineSegments(edges, lineMaterial);
   edgesSegments.scale.set(SCALE, SCALE, SCALE);
   edgesSegments.position.y -= 0.4 * SCALE;
   scene.add(edgesSegments);
+
+  let drawRange = 0;
+  let lastTime;
+  function frame(time) {
+    if (time === undefined) {
+      requestAnimationFrame(frame);
+      return;
+    }
+    if (lastTime === undefined) lastTime = time;
+    let dt = time - lastTime;
+
+    drawRange += dt * 2;
+    edges.setDrawRange(0, Math.floor(drawRange));
+    if (drawRange > drawCount) return;
+
+    lastTime = time;
+    requestAnimationFrame(frame);
+  }
+  frame();
 
   interactionManager.add(mesh);
   mesh.addEventListener('mouseover', event => event.stopPropagation());
