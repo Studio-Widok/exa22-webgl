@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { LineSegments2, LineSegmentsGeometry, OrbitControls } from "three/examples/jsm/Addons.js";
 import { InteractionManager } from 'three.interactive';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
 const SCALE = 0.1;
 
@@ -14,9 +15,9 @@ function initCamera({ renderer }) {
   controls.dampingFactor = 0.05;
   controls.screenSpacePanning = false;
   controls.minDistance = 0.2;
-  controls.maxDistance = 1;
-  controls.minPolarAngle = Math.PI / 4;
-  controls.maxPolarAngle = Math.PI / 4 * 3;
+  controls.maxDistance = 0.2;
+  controls.minPolarAngle = Math.PI * 0.4;
+  controls.maxPolarAngle = Math.PI * 0.4;
 
   window.addEventListener('resize', onWindowResize);
   function onWindowResize() {
@@ -60,67 +61,59 @@ function loadModel() {
 
 async function displayModel({ scene, interactionManager }) {
   const model = await loadModel();
-  const geometry = model.scene.children[0].geometry;
 
   const meshMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
-  const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+  const lineMaterial = new LineMaterial({
+    color: 0xffffff,
+    linewidth: 2,
+    worldUnits: false,
+    alphaToCoverage: true,
+  });
 
-  const mesh = new THREE.Mesh(geometry, meshMaterial);
-  mesh.scale.set(SCALE, SCALE, SCALE);
-  mesh.position.y -= 0.4 * SCALE;
-  scene.add(mesh);
+  for (let i = 0; i < model.scene.children.length; i++) {
+    const geometry = model.scene.children[i].geometry;
+    const edges = new THREE.EdgesGeometry(geometry, 30);
 
-  const edges = new THREE.EdgesGeometry(geometry);
-  const drawCount = edges.parameters.geometry.index.count;
+    const mesh = new THREE.Mesh(geometry, meshMaterial);
+    mesh.scale.set(SCALE, SCALE, SCALE);
+    mesh.position.y -= 0.4 * SCALE;
+    scene.add(mesh);
 
-  edges.setDrawRange(0, 0);
-  const edgesSegments = new THREE.LineSegments(edges, lineMaterial);
-  edgesSegments.scale.set(SCALE, SCALE, SCALE);
-  edgesSegments.position.y -= 0.4 * SCALE;
-  scene.add(edgesSegments);
+    interactionManager.add(mesh);
+    mesh.addEventListener('mouseover', event => event.stopPropagation());
+    mesh.addEventListener('mouseout', event => event.stopPropagation());
 
-  let drawRange = 0;
-  let lastTime;
-  function frame(time) {
-    if (time === undefined) {
-      requestAnimationFrame(frame);
-      return;
-    }
-    if (lastTime === undefined) lastTime = time;
-    let dt = time - lastTime;
-
-    drawRange += dt * 2;
-    edges.setDrawRange(0, Math.floor(drawRange));
-    if (drawRange > drawCount) return;
-
-    lastTime = time;
-    requestAnimationFrame(frame);
+    const lineSegmentsGeometry = new LineSegmentsGeometry();
+    lineSegmentsGeometry.fromEdgesGeometry(edges);
+    const lineSegments2 = new LineSegments2(lineSegmentsGeometry, lineMaterial);
+    lineSegments2.scale.set(SCALE, SCALE, SCALE);
+    lineSegments2.position.y -= 0.4 * SCALE;
+    scene.add(lineSegments2);
   }
-  frame();
 
-  interactionManager.add(mesh);
-  mesh.addEventListener('mouseover', event => event.stopPropagation());
-  mesh.addEventListener('mouseout', event => event.stopPropagation());
+  return;
+
+
 }
 
-function displayDots({ scene, interactionManager }) {
-  const sphereGeometry = new THREE.IcosahedronGeometry(0.02, 1);
-  const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-  const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  sphere.position.x = -1 * SCALE;
-  sphere.position.y = (0.96667 - 0.4) * SCALE;
-  sphere.position.z = -0.11667 * SCALE;
-  scene.add(sphere);
+// function displayDots({ scene, interactionManager }) {
+//   const sphereGeometry = new THREE.IcosahedronGeometry(0.02, 1);
+//   const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+//   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+//   sphere.position.x = -1 * SCALE;
+//   sphere.position.y = (0.96667 - 0.4) * SCALE;
+//   sphere.position.z = -0.11667 * SCALE;
+//   scene.add(sphere);
 
-  interactionManager.add(sphere);
-  sphere.addEventListener('mouseover', () => {
-    sphereMaterial.color.set(0xff0000);
-  });
-  sphere.addEventListener('mouseout', () => {
-    sphereMaterial.color.set(0xffff00);
-  });
-}
+//   interactionManager.add(sphere);
+//   sphere.addEventListener('mouseover', () => {
+//     sphereMaterial.color.set(0xff0000);
+//   });
+//   sphere.addEventListener('mouseout', () => {
+//     sphereMaterial.color.set(0xffff00);
+//   });
+// }
 
 const { scene, camera, renderer, controls, interactionManager } = await initScene();
 await displayModel({ scene, interactionManager });
-displayDots({ scene, interactionManager });
+// displayDots({ scene, interactionManager });
