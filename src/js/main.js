@@ -7,19 +7,57 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 const SCALE = 1;
 const VIEW_ASPECT = 4 / 3;
 const container = document.getElementById('model');
-const bgColor = 0x111111;
+const minEdgeAngle = 12;
+const dotSize = 0.03;
+const colors = {
+  bg: 0x000000,
+  line: 0xffffff,
+  dot: 0xffdd00,
+  dotHover: 0xee9900,
+};
+
+const dots = [
+  {
+    position: {
+      x: -0.75,
+      y: 0.56,
+      z: -0.2,
+    },
+  },
+  {
+    position: {
+      x: 0.65,
+      y: 0.25,
+      z: -0.25,
+    },
+  },
+  {
+    position: {
+      x: 0.15,
+      y: 0.1,
+      z: -0.2,
+    },
+  },
+  {
+    position: {
+      x: -0.2,
+      y: 0.05,
+      z: -0.05,
+    },
+  },
+];
 
 function initCamera({ renderer }) {
-  const camera = new THREE.PerspectiveCamera(60, VIEW_ASPECT, 0.01, 1000);
+  const camera = new THREE.PerspectiveCamera(50, VIEW_ASPECT, 0.01, 1000);
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.enableZoom = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.04;
-  controls.minDistance = 2;
-  controls.maxDistance = 2;
-  controls.minPolarAngle = Math.PI * 0.4;
-  controls.maxPolarAngle = Math.PI * 0.4;
+  controls.minDistance = 2.5;
+  controls.maxDistance = 2.5;
+  controls.minPolarAngle = Math.PI * 0.35;
+  controls.maxPolarAngle = Math.PI * 0.35;
 
   window.addEventListener('resize', onWindowResize);
   function onWindowResize() {
@@ -34,7 +72,7 @@ async function initScene() {
   const scene = new THREE.Scene();
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setClearColor(bgColor);
+  renderer.setClearColor(colors.bg);
   renderer.setSize(container.clientWidth, container.clientWidth / VIEW_ASPECT);
   document.getElementById('model').appendChild(renderer.domElement);
   const { camera, controls } = initCamera({ renderer });
@@ -64,9 +102,15 @@ function loadModel() {
 async function displayModel({ scene, interactionManager }) {
   const model = await loadModel();
 
-  const meshMaterial = new THREE.MeshBasicMaterial({ color: bgColor, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const meshMaterial = new THREE.MeshBasicMaterial({
+    color: colors.bg,
+    side: THREE.DoubleSide,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
   const lineMaterial = new LineMaterial({
-    color: 0xffffff,
+    color: colors.line,
     linewidth: 2,
     worldUnits: false,
     alphaToCoverage: true,
@@ -74,43 +118,70 @@ async function displayModel({ scene, interactionManager }) {
 
   for (let i = 0; i < model.scene.children.length; i++) {
     const geometry = model.scene.children[i].geometry;
-    const edges = new THREE.EdgesGeometry(geometry, 23);
+    const edges = new THREE.EdgesGeometry(geometry, minEdgeAngle);
 
     const mesh = new THREE.Mesh(geometry, meshMaterial);
     mesh.scale.set(SCALE, SCALE, SCALE);
-    mesh.position.y -= 0.4 * SCALE;
     scene.add(mesh);
 
     interactionManager.add(mesh);
     mesh.addEventListener('mouseover', event => event.stopPropagation());
     mesh.addEventListener('mouseout', event => event.stopPropagation());
+    mesh.addEventListener('click', event => event.stopPropagation());
 
     const lineSegmentsGeometry = new LineSegmentsGeometry().fromEdgesGeometry(edges);
     const lineSegments2 = new LineSegments2(lineSegmentsGeometry, lineMaterial);
     lineSegments2.scale.set(SCALE, SCALE, SCALE);
-    lineSegments2.position.y -= 0.4 * SCALE;
     scene.add(lineSegments2);
   }
 
   return;
 }
 
-function displayDots({ scene, interactionManager }) {
-  const sphereGeometry = new THREE.IcosahedronGeometry(0.05 * SCALE, 2);
-  const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-  const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  sphere.position.x = -1 * SCALE;
-  sphere.position.y = (0.96667 - 0.4) * SCALE;
-  sphere.position.z = -0.11667 * SCALE;
-  scene.add(sphere);
+const dotDescriptionsWrap = document.getElementById('desc');
+const dotDescriptions = Array.from(document.getElementsByClassName('dot-description'));
+let dotTimeout;
+function showDescription(index) {
+  dotDescriptionsWrap.append(dotDescriptions[index]);
 
-  interactionManager.add(sphere);
-  sphere.addEventListener('mouseover', () => {
-    sphereMaterial.color.set(0xff0000);
-  });
-  sphere.addEventListener('mouseout', () => {
-    sphereMaterial.color.set(0xffff00);
-  });
+  dotDescriptions[index].style.height = dotDescriptions[index].scrollHeight + 'px';
+  dotTimeout = setTimeout(() => dotDescriptions[index].style.height = 'auto', 300);
+
+  for (let i = 0; i < dotDescriptions.length; i++) {
+    if (i === index) continue;
+
+    dotDescriptions[i].style.height = dotDescriptions[i].scrollHeight + 'px';
+    clearTimeout(dotTimeout);
+    setTimeout(() => dotDescriptions[i].style.height = 0, 0);
+  }
+}
+
+function displayDots({ scene, interactionManager }) {
+
+  for (let i = 0; i < dots.length; i++) {
+    const dot = dots[i];
+
+    const sphereGeometry = new THREE.IcosahedronGeometry(dotSize * SCALE, 2);
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: colors.dot });
+    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    sphere.position.x = dot.position.x * SCALE;
+    sphere.position.y = dot.position.y * SCALE;
+    sphere.position.z = dot.position.z * SCALE;
+    scene.add(sphere);
+
+    interactionManager.add(sphere);
+    sphere.addEventListener('mouseover', () => {
+      sphereMaterial.color.set(colors.dotHover);
+      container.classList.add('hovered');
+    });
+    sphere.addEventListener('mouseout', () => {
+      sphereMaterial.color.set(colors.dot);
+      container.classList.remove('hovered');
+    });
+    sphere.addEventListener('click', () => {
+      showDescription(i);
+    });
+  }
 }
 
 const { scene, camera, renderer, controls, interactionManager } = await initScene();
