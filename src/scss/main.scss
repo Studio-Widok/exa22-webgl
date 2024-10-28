@@ -7,34 +7,46 @@ body {
   font-family: sans-serif;
 }
 
-#model {
-  width: 100%;
-  max-width: 60rem;
-  margin-bottom: 3rem;
-
-  canvas {
-    width: 100%;
-  }
-
-  &.hovered {
-    cursor: pointer;
-  }
-}
-
 #content {
   display: flex;
-  gap: 3rem;
-  margin: 3rem 0;
-  padding: 0 3rem;
   align-items: center;
+  justify-content: center;
 
   .text {
-    max-width: 40em;
+    max-width: 30em;
+    padding-right: 3rem;
   }
 
   .dot-description {
     height: 0;
     overflow: hidden;
     transition: 0.3s;
+  }
+
+  #model {
+    width: 60%;
+    max-width: 60rem;
+    flex-shrink: 0;
+
+    canvas {
+      width: 100%;
+    }
+
+    &.hovered {
+      cursor: pointer;
+    }
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 2rem;
+
+    #model {
+      width: 100%;
+    }
+
+    .text {
+      padding: 0 2rem;
+    }
   }
 }

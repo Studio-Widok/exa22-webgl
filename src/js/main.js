@@ -4,7 +4,7 @@ import { LineSegments2, LineSegmentsGeometry, OrbitControls } from "three/exampl
 import { InteractionManager } from 'three.interactive';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
-const SCALE = 1;
+const SCALE = 1.1;
 const VIEW_ASPECT = 4 / 3;
 const container = document.getElementById('model');
 const minEdgeAngle = 12;
@@ -13,39 +13,47 @@ const colors = {
   bg: 0x000000,
   line: 0xffffff,
   dot: 0xffdd00,
-  dotHover: 0xee9900,
+  dotHover: 0xee3300,
+  elementHover: 0x444444,
+  elementActive: 0x333333,
 };
 
 const dots = [
   {
     position: {
       x: -0.75,
-      y: 0.56,
+      y: 0.63,
       z: -0.2,
     },
+    elements: ['dot_1'],
   },
   {
     position: {
       x: 0.65,
-      y: 0.25,
+      y: 0.32,
       z: -0.25,
     },
+    elements: ['dot_2'],
   },
   {
     position: {
       x: 0.15,
-      y: 0.1,
+      y: 0.17,
       z: -0.2,
     },
+    elements: ['dot_3'],
   },
   {
     position: {
       x: -0.2,
-      y: 0.05,
+      y: 0.12,
       z: -0.05,
     },
+    elements: ['dot_4'],
   },
 ];
+
+for (let i = 0; i < dots.length; i++) dots[i].index = i;
 
 function initCamera({ renderer }) {
   const camera = new THREE.PerspectiveCamera(50, VIEW_ASPECT, 0.01, 1000);
@@ -103,7 +111,7 @@ async function displayModel({ scene, interactionManager }) {
   const model = await loadModel();
 
   const meshMaterial = new THREE.MeshBasicMaterial({
-    color: colors.bg,
+    color: 0x000000,
     side: THREE.DoubleSide,
     polygonOffset: true,
     polygonOffsetFactor: 1,
@@ -111,7 +119,7 @@ async function displayModel({ scene, interactionManager }) {
   });
   const lineMaterial = new LineMaterial({
     color: colors.line,
-    linewidth: 2,
+    linewidth: 1.5,
     worldUnits: false,
     alphaToCoverage: true,
   });
@@ -120,7 +128,24 @@ async function displayModel({ scene, interactionManager }) {
     const geometry = model.scene.children[i].geometry;
     const edges = new THREE.EdgesGeometry(geometry, minEdgeAngle);
 
-    const mesh = new THREE.Mesh(geometry, meshMaterial);
+    let selectableMaterial;
+    for (let j = 0; j < dots.length; j++) {
+      const dot = dots[j];
+
+      if (dot.elements.includes(model.scene.children[i].name)) {
+        dot.meshMaterial = new THREE.MeshBasicMaterial({
+          color: colors.bg,
+          side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1,
+        });
+        selectableMaterial = dot.meshMaterial;
+        break;
+      }
+    }
+
+    const mesh = new THREE.Mesh(geometry, selectableMaterial ?? meshMaterial);
     mesh.scale.set(SCALE, SCALE, SCALE);
     scene.add(mesh);
 
@@ -157,7 +182,6 @@ function showDescription(index) {
 }
 
 function displayDots({ scene, interactionManager }) {
-
   for (let i = 0; i < dots.length; i++) {
     const dot = dots[i];
 
@@ -172,13 +196,23 @@ function displayDots({ scene, interactionManager }) {
     interactionManager.add(sphere);
     sphere.addEventListener('mouseover', () => {
       sphereMaterial.color.set(colors.dotHover);
+      dot.meshMaterial.color.set(colors.elementHover);
       container.classList.add('hovered');
     });
     sphere.addEventListener('mouseout', () => {
       sphereMaterial.color.set(colors.dot);
+      if (!dot.isActive) dot.meshMaterial.color.set(colors.bg);
       container.classList.remove('hovered');
     });
     sphere.addEventListener('click', () => {
+      dot.meshMaterial.color.set(colors.elementActive);
+      dot.isActive = true;
+      for (let j = 0; j < dots.length; j++) {
+        if (dot.index === dots[j].index) continue;
+
+        dots[j].isActive = false;
+        dots[j].meshMaterial.color.set(colors.bg);
+      }
       showDescription(i);
     });
   }
