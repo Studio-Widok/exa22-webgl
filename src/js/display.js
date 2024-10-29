@@ -63,7 +63,10 @@ async function displayModel({ scene, interactionManager }) {
 const dotDescriptionsWrap = document.getElementById('desc');
 const dotDescriptions = Array.from(document.getElementsByClassName('dot-description'));
 let dotTimeout;
+
 function showDescription(index) {
+  dots[index].isActive = true;
+  dots[index].meshMaterial.color.set(settings.colors.elementActive);
   dotDescriptionsWrap.append(dotDescriptions[index]);
 
   dotDescriptions[index].style.height = dotDescriptions[index].scrollHeight + 'px';
@@ -71,11 +74,16 @@ function showDescription(index) {
 
   for (let i = 0; i < dotDescriptions.length; i++) {
     if (i === index) continue;
-
-    dotDescriptions[i].style.height = dotDescriptions[i].scrollHeight + 'px';
-    clearTimeout(dotTimeout);
-    setTimeout(() => dotDescriptions[i].style.height = 0, 0);
+    hideDescription(i);
   }
+}
+
+function hideDescription(index) {
+  dots[index].isActive = false;
+  dots[index].meshMaterial.color.set(settings.colors.bg);
+  dotDescriptions[index].style.height = dotDescriptions[index].scrollHeight + 'px';
+  clearTimeout(dotTimeout);
+  setTimeout(() => dotDescriptions[index].style.height = 0, 0);
 }
 
 function displayDots({ scene, interactionManager }) {
@@ -102,15 +110,8 @@ function displayDots({ scene, interactionManager }) {
       settings.container.classList.remove('hovered');
     });
     sphere.addEventListener('click', () => {
-      dot.meshMaterial.color.set(settings.colors.elementActive);
-      dot.isActive = true;
-      for (let j = 0; j < dots.length; j++) {
-        if (dot.index === dots[j].index) continue;
-
-        dots[j].isActive = false;
-        dots[j].meshMaterial.color.set(settings.colors.bg);
-      }
-      showDescription(i);
+      if (dot.isActive) hideDescription(i);
+      else showDescription(i);
     });
   }
 }
