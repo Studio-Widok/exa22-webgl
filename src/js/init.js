@@ -8,6 +8,8 @@ function initCamera({ renderer }) {
   const camera = new THREE.PerspectiveCamera(50, settings.viewAspect, 0.01, 1000);
   const controls = new OrbitControls(camera, renderer.domElement);
 
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.0;
   controls.enableZoom = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.04;
@@ -15,6 +17,18 @@ function initCamera({ renderer }) {
   controls.maxDistance = 2.5;
   controls.minPolarAngle = Math.PI * 0.35;
   controls.maxPolarAngle = Math.PI * 0.35;
+
+  let autoRotateTimeout;
+  controls.addEventListener('start', function () {
+    clearTimeout(autoRotateTimeout);
+    controls.autoRotate = false;
+  });
+
+  controls.addEventListener('end', function () {
+    autoRotateTimeout = setTimeout(function () {
+      controls.autoRotate = true;
+    }, 5000);
+  });
 
   window.addEventListener('resize', onWindowResize);
   function onWindowResize() {
@@ -42,12 +56,6 @@ async function initScene() {
     camera,
     renderer.domElement
   );
-
-  renderer.setAnimationLoop(() => {
-    controls.update();
-    interactionManager.update();
-    renderer.render(scene, camera);
-  });
 
   return { scene, camera, renderer, controls, interactionManager };
 }
