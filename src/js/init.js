@@ -6,10 +6,11 @@ import { settings } from "./settings";
 
 function initCamera({ renderer }) {
   const camera = new THREE.PerspectiveCamera(50, settings.viewAspect, 0.01, 1000);
+  camera.position.z = -5;
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 1.0;
+  controls.autoRotateSpeed = 3.0;
   controls.enableZoom = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.04;
@@ -27,7 +28,7 @@ function initCamera({ renderer }) {
   controls.addEventListener('end', function () {
     autoRotateTimeout = setTimeout(function () {
       controls.autoRotate = true;
-    }, 5000);
+    }, 7000);
   });
 
   window.addEventListener('resize', onWindowResize);

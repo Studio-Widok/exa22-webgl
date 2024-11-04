@@ -1,43 +1,51 @@
 const dots = [
   {
     position: {
-      x: -0.75,
-      y: 0.63,
-      z: -0.2,
-    },
-    elements: ['dot_1'],
-  },
-  {
-    position: {
-      x: 0.65,
-      y: 0.32,
-      z: -0.25,
-    },
-    elements: ['dot_2'],
-  },
-  {
-    position: {
       x: 0.15,
-      y: 0.17,
-      z: -0.2,
+      y: -0.2,
+      z: 0.25,
     },
-    elements: ['dot_3'],
+    elements: ['obj001'],
   },
   {
     position: {
-      x: -0.2,
-      y: 0.12,
-      z: -0.05,
+      x: -0.8,
+      y: -0.05,
+      z: -0.65,
     },
-    elements: ['dot_4'],
+    elements: ['obj003'],
+  },
+  {
+    position: {
+      x: 0.43,
+      y: -0.05,
+      z: 0.23,
+    },
+    elements: ['obj004'],
+  },
+  {
+    position: {
+      x: 0.03,
+      y: -0.11,
+      z: -0.17,
+    },
+    elements: ['obj006'],
+  },
+  {
+    position: {
+      x: 0.85,
+      y: -0.24,
+      z: 0.16,
+    },
+    elements: ['obj007'],
   },
 ];
 
 for (let i = 0; i < dots.length; i++) dots[i].index = i;
 
 const settings = {
-  viewAspect: 4 / 3,
-  scale: 1.1,
+  viewAspect: 5 / 4,
+  scale: 1,
   container: document.getElementById('model'),
   minEdgeAngle: 12,
   dotSize: 0.03,
