@@ -10,7 +10,7 @@ function initCamera({ renderer }) {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 3.0;
+  controls.autoRotateSpeed = 1.0;
   controls.enableZoom = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.04;
