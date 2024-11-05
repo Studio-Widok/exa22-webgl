@@ -6,6 +6,7 @@ const dots = [
       z: 0.25,
     },
     elements: ['obj001'],
+    label: 'elektronika i oprogramowanie',
   },
   {
     position: {
@@ -14,6 +15,7 @@ const dots = [
       z: -0.65,
     },
     elements: ['obj003'],
+    label: 'interfejs użytkownika',
   },
   {
     position: {
@@ -22,6 +24,7 @@ const dots = [
       z: 0.23,
     },
     elements: ['obj004'],
+    label: 'automatyka',
   },
   {
     position: {
@@ -30,6 +33,7 @@ const dots = [
       z: -0.17,
     },
     elements: ['obj006'],
+    label: 'projektowanie maszyn',
   },
   {
     position: {
@@ -38,6 +42,7 @@ const dots = [
       z: 0.16,
     },
     elements: ['obj007'],
+    label: 'certyfikacja CE',
   },
 ];
 
@@ -46,13 +51,14 @@ for (let i = 0; i < dots.length; i++) dots[i].index = i;
 const settings = {
   viewAspect: 5 / 4,
   scale: 1,
+  autoRotateInterval: 3500,
   container: document.getElementById('model'),
   minEdgeAngle: 12,
   dotSize: 0.03,
   colors: {
     bg: 0x000000,
     line: 0xffffff,
-    dot: 0xffdd33,
+    dot: 0xe3e21f,
     dotHover: 0xee3300,
     elementHover: 0x444444,
     elementActive: 0x666666,

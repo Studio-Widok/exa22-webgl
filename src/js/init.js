@@ -10,7 +10,7 @@ function initCamera({ renderer }) {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 1.0;
+  controls.autoRotateSpeed = 0.25;
   controls.enableZoom = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.04;
@@ -28,13 +28,13 @@ function initCamera({ renderer }) {
   controls.addEventListener('end', function () {
     autoRotateTimeout = setTimeout(function () {
       controls.autoRotate = true;
-    }, 7000);
+    }, settings.autoRotateInterval);
   });
 
   window.addEventListener('resize', onWindowResize);
   function onWindowResize() {
     camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientWidth / settings.viewAspect);
+    renderer.setSize(settings.container.clientWidth, settings.container.clientWidth / settings.viewAspect);
   }
 
   return { camera, controls };
@@ -43,8 +43,7 @@ function initCamera({ renderer }) {
 async function initScene() {
   const scene = new THREE.Scene();
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setClearColor(settings.colors.bg);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(
     settings.container.clientWidth,
     settings.container.clientWidth / settings.viewAspect

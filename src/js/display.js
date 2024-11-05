@@ -87,6 +87,7 @@ function hideDescription(index) {
 }
 
 function displayDots({ scene, interactionManager }) {
+  const labelClickElement = document.getElementById('labels-info');
   for (let i = 0; i < dots.length; i++) {
     const dot = dots[i];
 
@@ -103,11 +104,15 @@ function displayDots({ scene, interactionManager }) {
       sphereMaterial.color.set(settings.colors.dotHover);
       dot.meshMaterial.color.set(settings.colors.elementHover);
       settings.container.classList.add('hovered');
+      labelClickElement.classList.add('visible');
+      labelClickElement.textContent = dot.label;
     });
     sphere.addEventListener('mouseout', () => {
       sphereMaterial.color.set(settings.colors.dot);
       if (!dot.isActive) dot.meshMaterial.color.set(settings.colors.bg);
       settings.container.classList.remove('hovered');
+      labelClickElement.classList.remove('visible');
+      labelClickElement.textContent = '';
     });
     sphere.addEventListener('click', () => {
       if (dot.isActive) hideDescription(i);

@@ -10,7 +10,24 @@
 
 <body>
   <div id="content">
-    <div id="model"></div>
+    <div id="model-wrap">
+      <div id="model"></div>
+      <div id="model-labels">
+        <div>
+          <svg viewBox="0 0 10 10" class="arrow">
+            <path d="M0 5L5 0L10 0L5 5L10 10L5 10z" />
+          </svg>
+          obróć model
+          <svg viewBox="0 0 10 10" class="arrow">
+            <path d="M10 5L5 0L0 0L5 5L0 10L5 10z" />
+          </svg>
+        </div>
+        <div class="labels">
+          <div class="labels-dot"></div>
+          <div id="labels-info"></div> – więcej informacji
+        </div>
+      </div>
+    </div>
     <div class="text" id="desc">
       <div class="dot-description">
         <h3>1. Projektowanie elektroniki</h3>
@@ -36,7 +53,8 @@
       </div>
       <div class="dot-description">
         <h3>4. Elektryka i automatyka</h3>
-        <p>Pojektujemy szaf sterownicze i rozdzielnice z komponentami automatyki
+        <p>Projektujemy szaf sterownicze i rozdzielnice z komponentami
+          automatyki
           do maszyn zgodnie z PN-EN IEC 61439. Prototypujemy i wykonujemy testy
           przeciążeniowe. Tworzymy kompletną dokumentację produkcyjną. Oferujemy
           produkcję seryjną i wsparcie serwisowe.</p>
