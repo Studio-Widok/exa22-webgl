@@ -52,10 +52,10 @@ const settings = {
   colors: {
     bg: 0x000000,
     line: 0xffffff,
-    dot: 0xffdd00,
+    dot: 0xffdd33,
     dotHover: 0xee3300,
     elementHover: 0x444444,
-    elementActive: 0x333333,
+    elementActive: 0x666666,
   },
 };
 
