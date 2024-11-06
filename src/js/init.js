@@ -7,6 +7,7 @@ import { settings } from "./settings";
 function initCamera({ renderer }) {
   const camera = new THREE.PerspectiveCamera(50, settings.viewAspect, 0.01, 1000);
   camera.position.z = -5;
+  camera.position.y = 2;
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.autoRotate = true;
@@ -16,8 +17,8 @@ function initCamera({ renderer }) {
   controls.dampingFactor = 0.04;
   controls.minDistance = 2.5;
   controls.maxDistance = 2.5;
-  controls.minPolarAngle = Math.PI * 0.35;
-  controls.maxPolarAngle = Math.PI * 0.35;
+  controls.minPolarAngle = Math.PI * 0.25;
+  controls.maxPolarAngle = Math.PI * 0.5;
 
   let autoRotateTimeout;
   controls.addEventListener('start', function () {
