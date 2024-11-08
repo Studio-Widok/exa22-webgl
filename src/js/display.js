@@ -3,6 +3,7 @@ import { LineSegments2, LineSegmentsGeometry } from "three/examples/jsm/Addons.j
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { loadModel } from "./init";
 import { dots, settings } from "./settings";
+import { dotClick, dotMouseOut, dotMouseOver } from "./descriptions";
 
 async function displayModel({ scene, interactionManager }) {
   const model = await loadModel();
@@ -60,70 +61,22 @@ async function displayModel({ scene, interactionManager }) {
   return;
 }
 
-const dotDescriptions = Array.from(document.getElementsByClassName('dot'));
-Array.from(document.getElementsByClassName('dot-title')).forEach(title => {
-  title.addEventListener('click', () => {
-    showDescription(parseInt(title.dataset['index']));
-  });
-});
-let dotTimeout;
-
-function showDescription(index) {
-  dots[index].isActive = true;
-  dots[index].meshMaterial.color.set(settings.colors.elementActive);
-
-  const descElement = dotDescriptions[index].getElementsByClassName('dot-description')[0];
-  descElement.style.height = descElement.scrollHeight + 'px';
-  dotTimeout = setTimeout(() => descElement.style.height = 'auto', 300);
-
-  for (let i = 0; i < dotDescriptions.length; i++) {
-    if (i === index) continue;
-    hideDescription(i);
-  }
-}
-
-function hideDescription(index) {
-  dots[index].isActive = false;
-  dots[index].meshMaterial.color.set(settings.colors.bg);
-
-  const descElement = dotDescriptions[index].getElementsByClassName('dot-description')[0];
-  descElement.style.height = descElement.scrollHeight + 'px';
-  clearTimeout(dotTimeout);
-  setTimeout(() => descElement.style.height = 0, 0);
-}
-
 function displayDots({ scene, interactionManager }) {
-  const labelClickElement = document.getElementById('labels-info');
   for (let i = 0; i < dots.length; i++) {
     const dot = dots[i];
 
     const sphereGeometry = new THREE.IcosahedronGeometry(settings.dotSize * settings.scale, 2);
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: settings.colors.dot });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    dot.sphereMaterial = new THREE.MeshBasicMaterial({ color: settings.colors.dot });
+    const sphere = new THREE.Mesh(sphereGeometry, dot.sphereMaterial);
     sphere.position.x = dot.position.x * settings.scale;
     sphere.position.y = dot.position.y * settings.scale;
     sphere.position.z = dot.position.z * settings.scale;
     scene.add(sphere);
 
     interactionManager.add(sphere);
-    sphere.addEventListener('mouseover', () => {
-      sphereMaterial.color.set(settings.colors.dotHover);
-      dot.meshMaterial.color.set(settings.colors.elementHover);
-      settings.container.classList.add('hovered');
-      labelClickElement.classList.add('visible');
-      labelClickElement.textContent = dot.label;
-    });
-    sphere.addEventListener('mouseout', () => {
-      sphereMaterial.color.set(settings.colors.dot);
-      if (!dot.isActive) dot.meshMaterial.color.set(settings.colors.bg);
-      settings.container.classList.remove('hovered');
-      labelClickElement.classList.remove('visible');
-      labelClickElement.textContent = '';
-    });
-    sphere.addEventListener('click', () => {
-      if (dot.isActive) hideDescription(i);
-      else showDescription(i);
-    });
+    sphere.addEventListener('mouseover', () => dotMouseOver(dot));
+    sphere.addEventListener('mouseout', () => dotMouseOut(dot));
+    sphere.addEventListener('click', () => dotClick(dot));
   }
 }
 
