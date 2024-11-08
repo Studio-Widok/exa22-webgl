@@ -17,14 +17,26 @@ body {
     padding-right: 3rem;
   }
 
-  .dot-description {
-    height: 0;
-    overflow: hidden;
-    transition: 0.3s;
-
+  .dot {
     h3 {
       font-weight: 700;
       color: #e3e21f;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        color: #ee3300;
+      }
+    }
+
+    .dot-description {
+      height: 0;
+      overflow: hidden;
+      transition: 0.3s;
+
+      p:first-child {
+        margin-top: 0;
+      }
     }
   }
 

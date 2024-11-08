@@ -26,11 +26,11 @@ function initCamera({ renderer }) {
     controls.autoRotate = false;
   });
 
-  controls.addEventListener('end', function () {
-    autoRotateTimeout = setTimeout(function () {
-      controls.autoRotate = true;
-    }, settings.autoRotateInterval);
-  });
+  // controls.addEventListener('end', function () {
+  //   autoRotateTimeout = setTimeout(function () {
+  //     controls.autoRotate = true;
+  //   }, settings.autoRotateInterval);
+  // });
 
   window.addEventListener('resize', onWindowResize);
   function onWindowResize() {

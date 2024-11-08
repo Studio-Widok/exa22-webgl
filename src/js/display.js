@@ -60,17 +60,21 @@ async function displayModel({ scene, interactionManager }) {
   return;
 }
 
-const dotDescriptionsWrap = document.getElementById('desc');
-const dotDescriptions = Array.from(document.getElementsByClassName('dot-description'));
+const dotDescriptions = Array.from(document.getElementsByClassName('dot'));
+Array.from(document.getElementsByClassName('dot-title')).forEach(title => {
+  title.addEventListener('click', () => {
+    showDescription(parseInt(title.dataset['index']));
+  });
+});
 let dotTimeout;
 
 function showDescription(index) {
   dots[index].isActive = true;
   dots[index].meshMaterial.color.set(settings.colors.elementActive);
-  dotDescriptionsWrap.append(dotDescriptions[index]);
 
-  dotDescriptions[index].style.height = dotDescriptions[index].scrollHeight + 'px';
-  dotTimeout = setTimeout(() => dotDescriptions[index].style.height = 'auto', 300);
+  const descElement = dotDescriptions[index].getElementsByClassName('dot-description')[0];
+  descElement.style.height = descElement.scrollHeight + 'px';
+  dotTimeout = setTimeout(() => descElement.style.height = 'auto', 300);
 
   for (let i = 0; i < dotDescriptions.length; i++) {
     if (i === index) continue;
@@ -81,9 +85,11 @@ function showDescription(index) {
 function hideDescription(index) {
   dots[index].isActive = false;
   dots[index].meshMaterial.color.set(settings.colors.bg);
-  dotDescriptions[index].style.height = dotDescriptions[index].scrollHeight + 'px';
+
+  const descElement = dotDescriptions[index].getElementsByClassName('dot-description')[0];
+  descElement.style.height = descElement.scrollHeight + 'px';
   clearTimeout(dotTimeout);
-  setTimeout(() => dotDescriptions[index].style.height = 0, 0);
+  setTimeout(() => descElement.style.height = 0, 0);
 }
 
 function displayDots({ scene, interactionManager }) {
