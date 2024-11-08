@@ -6,7 +6,6 @@ const dots = [
       z: 0.25,
     },
     elements: ['obj001'],
-    label: 'elektronika i oprogramowanie',
   },
   {
     position: {
@@ -15,7 +14,6 @@ const dots = [
       z: -0.65,
     },
     elements: ['obj003'],
-    label: 'interfejs użytkownika',
   },
   {
     position: {
@@ -24,7 +22,6 @@ const dots = [
       z: 0.23,
     },
     elements: ['obj004'],
-    label: 'automatyka',
   },
   {
     position: {
@@ -33,7 +30,6 @@ const dots = [
       z: -0.17,
     },
     elements: ['obj006'],
-    label: 'projektowanie maszyn',
   },
   {
     position: {
@@ -42,7 +38,6 @@ const dots = [
       z: 0.16,
     },
     elements: ['obj007'],
-    label: 'certyfikacja CE',
   },
 ];
 

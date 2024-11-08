@@ -18,18 +18,19 @@ body {
   }
 
   .dot {
-    h3 {
+    &__title {
       font-weight: 700;
       color: #e3e21f;
       cursor: pointer;
       transition: 0.3s;
 
-      &:hover {
+      &:hover,
+      &.hovered {
         color: #ee3300;
       }
     }
 
-    .dot-description {
+    &__description {
       height: 0;
       overflow: hidden;
       transition: 0.3s;
@@ -79,16 +80,6 @@ body {
       align-items: center;
       justify-content: center;
       margin-top: 0.5rem;
-
-      #labels-info {
-        display: none;
-        color: #e3e21f;
-        padding: 0 0.5em 0 0;
-
-        &.visible {
-          display: block;
-        }
-      }
 
       .labels-dot {
         display: inline-block;
